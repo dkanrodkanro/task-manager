@@ -28,7 +28,14 @@
         <thead>
         <tr>
             <th>완료</th>
-            <th>제목</th>
+            <th>
+                제목
+                <a th:href="${sort == 'titleAsc'} ? @{/tasks(sort='titleDesc')} : @{/tasks(sort='titleAsc')}"
+                   style="text-decoration: none; font-size: 12px; margin-left: 4px;">
+                    <span th:style="${sort == 'titleDesc'} ? 'color: black;' : 'color: #ccc;'">▲</span>
+                    <span th:style="${sort == 'titleAsc'} ? 'color: black;' : 'color: #ccc;'">▼</span>
+                </a>
+            </th>
             <th>설명</th>
             <th>작성일</th>
             <th>수정</th>
@@ -43,7 +50,7 @@
             </td>
             <td th:text="${task.title}"></td>
             <td th:text="${task.description}"></td>
-            <td th:text="${task.createdAt}"></td>
+            <td th:text="${#temporals.format(task.createdAt, 'yyyy년 MM월 dd일 a hh시 mm분')}"></td>
             <td><a th:href="@{/tasks/{id}/edit(id=${task.id})}" class="btn btn-outline-secondary btn-sm">수정</a></td>
         </tr>
         </tbody>

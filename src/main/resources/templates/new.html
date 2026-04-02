@@ -17,10 +17,11 @@
 
 <div class="container mt-4" style="max-width: 600px;">
     <h5 class="mb-3">새 할 일 등록</h5>
-    <form th:action="@{/tasks/new}" method="post">
+    <form th:action="@{/tasks/new}" method="post" th:object="${taskCreateDTO}">
         <div class="mb-3">
             <label class="form-label">제목</label>
             <input type="text" name="title" class="form-control" placeholder="할 일 제목을 입력하세요">
+            <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="text-danger" style="font-size: 13px; margin-top: 4px;"></div>
         </div>
         <div class="mb-3">
             <label class="form-label">설명</label>

@@ -68,4 +68,12 @@ public class TaskService {
 
         taskRepository.delete(task);
     }
+
+    public List<Task> findByUserIdOrderByTitleAsc(Long userId) {
+        return taskRepository.findByUserIdOrderByTitleAsc(userId);
+    }
+
+    public List<Task> findByUserIdOrderByTitleDesc(Long userId) {
+        return taskRepository.findByUserIdOrderByTitleDesc(userId);
+    }
 }

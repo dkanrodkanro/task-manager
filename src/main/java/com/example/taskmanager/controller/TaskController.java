@@ -6,14 +6,14 @@ import com.example.taskmanager.entity.Task;
 import com.example.taskmanager.entity.User;
 import com.example.taskmanager.service.TaskService;
 import com.example.taskmanager.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 public class TaskController {
@@ -26,23 +26,37 @@ public class TaskController {
     }
 
     @GetMapping("tasks")
-    public String getTaskList(Principal principal, Model model){
+    public String getTaskList(Principal principal, Model model, @RequestParam(defaultValue = "date") String sort){
         String username = principal.getName();
         User user = userService.findUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        model.addAttribute("tasks", taskService.findByUserIdOrderByCreatedAtDesc(user.getId()));
+        List<Task> tasks;
+        if (sort.equals("titleAsc")) {
+            tasks = taskService.findByUserIdOrderByTitleAsc(user.getId());
+        } else if (sort.equals("titleDesc")) {
+            tasks = taskService.findByUserIdOrderByTitleDesc(user.getId());
+        } else {
+            tasks = taskService.findByUserIdOrderByCreatedAtDesc(user.getId());
+        }
+        model.addAttribute("tasks", tasks);
         model.addAttribute("username", username);
+        model.addAttribute("sort", sort);
         return "tasks";
     }
 
     @GetMapping("tasks/new")
-    public String getCreateTask() {
+    public String getCreateTask(Model model) {
+        model.addAttribute("taskCreateDTO", new TaskCreateDTO());
         return "new";
     }
 
     @PostMapping("/tasks/new")
-    public String postCreateTask(@ModelAttribute TaskCreateDTO dto, Principal principal) {
+    public String postCreateTask(@Valid @ModelAttribute TaskCreateDTO dto, BindingResult result, Principal principal) {
+        if(result.hasErrors()) {
+            return "new";
+        }
+
         String username = principal.getName();
         User user = userService.findUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
@@ -59,12 +73,19 @@ public class TaskController {
         if (!task.getUser().getUsername().equals(username)) {
             return "redirect:/tasks";
         }
+        model.addAttribute("taskUpdateDTO", new TaskUpdateDTO());
         model.addAttribute("task", task);
         return "edit";
     }
 
     @PostMapping("tasks/{id}/edit")
-    public String postEditTask(@PathVariable Long id, @ModelAttribute TaskUpdateDTO dto, Principal principal) {
+    public String postEditTask(@PathVariable Long id, @Valid @ModelAttribute TaskUpdateDTO dto, BindingResult result, Principal principal, Model model) {
+        if(result.hasErrors()) {
+            Task task = taskService.findOne(id);
+            model.addAttribute("task", task);
+            return "edit";
+        }
+
         String username = principal.getName();
         User user = userService.findUsername(username)
                         .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));

@@ -17,10 +17,11 @@
 
 <div class="container mt-4" style="max-width: 600px;">
     <h5 class="mb-3">할 일 수정</h5>
-    <form th:action="@{/tasks/{id}/edit(id=${task.id})}" method="post">
+    <form th:action="@{/tasks/{id}/edit(id=${task.id})}" method="post" th:object="${taskUpdateDTO}">
         <div class="mb-3">
             <label class="form-label">제목</label>
             <input type="text" name="title" class="form-control" th:value="${task.title}">
+            <div th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="text-danger" style="font-size: 13px; margin-top: 4px;"></div>
         </div>
         <div class="mb-3">
             <label class="form-label">설명</label>

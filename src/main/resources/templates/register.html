@@ -9,18 +9,21 @@
 <div class="container mt-5" style="max-width: 400px;">
     <h3 class="text-center mb-4">회원가입</h3>
     <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
-    <form th:action="@{/register}" method="post">
+    <form th:action="@{/register}" method="post" th:object="${userRegisterDTO}">
         <div class="mb-3">
             <label class="form-label">아이디</label>
             <input type="text" name="username" class="form-control" placeholder="아이디를 입력하세요">
+            <div th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="text-danger" style="font-size: 13px; margin-top: 4px;"></div>
         </div>
         <div class="mb-3">
             <label class="form-label">비밀번호</label>
             <input type="password" name="password" class="form-control" placeholder="비밀번호를 입력하세요">
+            <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-danger" style="font-size: 13px; margin-top: 4px;"></div>
         </div>
         <div class="mb-3">
             <label class="form-label">비밀번호 확인</label>
             <input type="password" name="passwordConfirm" class="form-control" placeholder="다시 한 번 비밀번호를 입력하세요">
+            <div th:if="${#fields.hasErrors('passwordConfirm')}" th:errors="*{passwordConfirm}" class="text-danger" style="font-size: 13px; margin-top: 4px;"></div>
         </div>
         <button type="submit" class="btn btn-primary w-100">가입하기</button>
     </form>

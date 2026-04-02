@@ -2,8 +2,10 @@ package com.example.taskmanager.controller;
 
 import com.example.taskmanager.dto.UserRegisterDTO;
 import com.example.taskmanager.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,7 +40,11 @@ public class AuthController {
     }
 
     @PostMapping("register")
-    public String register(@ModelAttribute UserRegisterDTO userRegisterDTO, Model model) {
+    public String register(@Valid @ModelAttribute UserRegisterDTO userRegisterDTO,
+                           BindingResult result, Model model) {
+        if(result.hasErrors()) {
+            return "register";
+        }
         try {
             userService.register(userRegisterDTO);
             return "redirect:/login";
